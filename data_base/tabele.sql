@@ -2,7 +2,6 @@ DROP SCHEMA IF EXISTS nba CASCADE;
 CREATE SCHEMA nba;
 
 -- Oficjalne zespoly
-
 CREATE DOMAIN nba.triCode AS varchar(5) NOT NULL CHECK (VALUE ~ '^[A-Z]{3}$');
 
 CREATE TABLE nba.oficjalne_zespoly (
@@ -33,12 +32,6 @@ CREATE TABLE nba.zawodnicy (
     wzrost_zawodnika nba.height,
     PRIMARY KEY (id_zawodnika),
     FOREIGN KEY (id_oficjalnego_zespolu) REFERENCES nba.oficjalne_zespoly(id_oficjalnego_zespolu) ON DELETE SET NULL
-);
-
-CREATE TABLE nba.pozycje (
-    id_pozycji nba.position,
-    nazwa_pozycji varchar(10),
-    PRIMARY KEY (id_pozycji)
 );
 
 -- mecze
