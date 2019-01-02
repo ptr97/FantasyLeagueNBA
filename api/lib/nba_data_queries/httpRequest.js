@@ -26,8 +26,6 @@ function httpRequest(url) {
             res.on('end', () => {
                 try {
                     parsedData = JSON.parse(rawData);
-                    // console.log(parsedData);
-                    
                 } catch(e) {
                     console.error(e.message);
                     reject(e);

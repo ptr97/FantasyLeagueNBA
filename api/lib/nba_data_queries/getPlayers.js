@@ -16,7 +16,6 @@ const Players = {
                     imie_zawodnika: player.firstName,
                     pozycja_zawodnika: player.pos,
                     numer_koszulki: player.jersey,
-                    zarobki_zawodnika: 3,
                     waga_zawodnika: player.weightKilograms,
                     wzrost_zawodnika: player.heightMeters
             }))
@@ -24,7 +23,7 @@ const Players = {
             
             toInsert.map(player => 
                 db.query(
-                    'INSERT INTO nba.zawodnicy VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)',
+                    'INSERT INTO nba.zawodnicy VALUES ($1, $2, $3, $4, $5, $6, DEFAULT, $7, $8)',
                     [
                         player.id_zawodnika,
                         player.id_oficjalnego_zespolu,
@@ -32,7 +31,6 @@ const Players = {
                         player.imie_zawodnika,
                         player.pozycja_zawodnika,
                         player.numer_koszulki,
-                        3,
                         player.waga_zawodnika,
                         player.wzrost_zawodnika
                     ]
