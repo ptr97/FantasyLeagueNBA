@@ -1,6 +1,8 @@
 DROP SCHEMA IF EXISTS nba CASCADE;
 CREATE SCHEMA nba;
 
+-- Tabele
+
 -- Oficjalne zespoly
 CREATE DOMAIN nba.triCode AS varchar(5) NOT NULL CHECK (VALUE ~ '^[A-Z]{3}$');
 
@@ -16,7 +18,7 @@ CREATE TABLE nba.oficjalne_zespoly (
 -- Zawodnicy
 CREATE DOMAIN nba.position AS varchar(5) NOT NULL CHECK (VALUE ~ '^[GFC](-[GFC])?$');
 CREATE DOMAIN nba.jerseyNo AS varchar(3) NOT NULL CHECK (VALUE ~ '^[0-9]{1,2}$');
-CREATE DOMAIN nba.salary AS int DEFAULT 1 CHECK (VALUE > 0 AND VALUE <= 10);
+CREATE DOMAIN nba.salary AS int DEFAULT 70 CHECK (VALUE > 0 AND VALUE <= 100);
 CREATE DOMAIN nba.weight AS numeric(4, 1) NOT NULL CHECK (VALUE > 50.0 AND VALUE < 180.0);
 CREATE DOMAIN nba.height AS numeric(3, 2) NOT NULL CHECK (VALUE > 1.40 AND VALUE < 2.60);
 
@@ -62,10 +64,11 @@ CREATE TABLE nba.statystyki_meczu (
 );
 
 -- uzytkownicy
-CREATE SEQUENCE nba.id_uzytkownika_sequence INCREMENT 1 MINVALUE 101 MAXVALUE 9999999 START 101;
+CREATE SEQUENCE nba.id_uzytkownika_sequence INCREMENT 1 MINVALUE 1 MAXVALUE 9999999 START 1;
+CREATE SEQUENCE nba.id_zespolu_uzytkownika_sequence INCREMENT 1 MINVALUE 1 MAXVALUE 9999999 START 1;
 
 CREATE TABLE nba.uzytkownicy (
-    id_uzytkownika bigint not null default nextval('nba.id_uzytkownika_sequence'),
+    id_uzytkownika bigint default nextval('nba.id_uzytkownika_sequence'),
     email_uzytkownika varchar(40) not null unique,
     haslo_uzytkownika varchar(100) not null,
     imie_uzytkownika varchar(40) not null,
@@ -75,13 +78,14 @@ CREATE TABLE nba.uzytkownicy (
 
 -- zespoly uzytkownikow
 CREATE TABLE nba.zespoly_uzytkownikow (
-    id_zespolu_uzytkownika bigint,
+    id_zespolu_uzytkownika bigint default nextval('nba.id_zespolu_uzytkownika_sequence'),
     id_uzytkownika bigint not null,
-    wynik_zespolu_uzytkownika bigint,
-    budzet_zespolu_zawodnika int,
-    suma_wynagrodzen_zawodnikow int,
+    wynik_zespolu_uzytkownika bigint default 0,
+    budzet_zespolu_uzytkownika int default 440 CHECK (budzet_zespolu_uzytkownika > 0),
+    suma_wynagrodzen_zawodnikow int default 0 CHECK (suma_wynagrodzen_zawodnikow >= 0),
     nazwa_zespolu_uzytkownika varchar(40) unique,
     PRIMARY KEY (id_zespolu_uzytkownika),
+    CONSTRAINT zgodny_budzet CHECK (suma_wynagrodzen_zawodnikow <= budzet_zespolu_uzytkownika),
     FOREIGN KEY (id_uzytkownika) REFERENCES nba.uzytkownicy(id_uzytkownika) ON DELETE CASCADE
 );
 
