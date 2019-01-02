@@ -4,6 +4,7 @@ import Auth from './middleware/Auth'
 import Users from './controllers/Users'
 import Admin from './controllers/Admin'
 import FantasyTeams from './controllers/FantasyTeams'
+import Games from './controllers/Games'
 import OfficialTeams from './controllers/OfficialTeams'
 import Players from './controllers/Players'
 
@@ -38,6 +39,14 @@ router.get('/users/me', Auth.verifyToken, Users.readUserData)
 router.put('/users/me/password', Auth.verifyToken, Users.updateUserPassword)
 
 // FantasyTeams
+router.post('/fantasy-teams', Auth.verifyToken, FantasyTeams.createTeam)
+router.get('/fantasy-teams', FantasyTeams.bestTeams)
+router.get('/fantasy-teams/my-team', Auth.verifyToken, FantasyTeams.myTeamInfo)
+router.delete('/fantasy-teams/my-team', Auth.verifyToken, FantasyTeams.deleteTeam)
+router.put('/fantasy-teams/my-team', Auth.verifyToken, FantasyTeams.updateTeam)
+router.put('/fantasy-teams/my-team/info', Auth.verifyToken, FantasyTeams.updateTeamInfo)
+
+// Games
 
 
 // Admin
@@ -62,8 +71,8 @@ app.use((err, req, res, next) => {
 })
 
 app.listen(app.get('port'), () => {
-console.log( 'Express started on http://localhost:' +
-        app.get('port') + '; press Ctrl-C to terminate.' )
+console.log('Express started on http://localhost:' +
+        app.get('port') + '; press Ctrl-C to terminate.')
 })
 
 export default app
