@@ -1,5 +1,6 @@
 import { Pool } from 'pg'
 import dotenv from 'dotenv'
+import 'babel-polyfill'
 
 dotenv.config()
 
@@ -18,5 +19,22 @@ export default {
                 reject(err)
             })
         })
-    }
+    },
+
+    async transaction(callback) {
+        const client = await pool.connect()
+        try {
+            await client.query('BEGIN')
+            try {
+                await callback(client)
+                client.query('COMMIT')
+            } catch(error) {
+                client.query('ROLLBACK')
+            }
+        } finally {
+            client.release()
+        }
+    }, 
+    
+    pool
 }
