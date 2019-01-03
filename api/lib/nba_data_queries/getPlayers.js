@@ -21,8 +21,8 @@ const Players = {
             }))
             console.log(toInsert)
             
-            toInsert.map(player => 
-                db.query(
+            toInsert.map(async player => 
+                await db.query(
                     'INSERT INTO nba.zawodnicy VALUES ($1, $2, $3, $4, $5, $6, DEFAULT, $7, $8)',
                     [
                         player.id_zawodnika,
