@@ -37,30 +37,33 @@ CREATE TABLE nba.zawodnicy (
 );
 
 -- mecze
+
+CREATE DOMAIN nba.game_day AS varchar(9) CHECK (VALUE ~ '^(201[8-9])(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])$');
+
 CREATE TABLE nba.mecze (
     id_meczu varchar(20),
-    data_meczu date,
+    data_meczu nba.game_day,
     id_zespolu_gospodarzy bigint,
     id_zespolu_gosci bigint,
     punkty_zespolu_gospodarzy int,
     punkty_zespolu_gosci int,
     PRIMARY KEY (id_meczu, data_meczu),
-    FOREIGN KEY (id_zespolu_gospodarzy) REFERENCES nba.oficjalne_zespoly(id_oficjalnego_zespolu),
-    FOREIGN KEY (id_zespolu_gosci) REFERENCES nba.oficjalne_zespoly(id_oficjalnego_zespolu)
+    FOREIGN KEY (id_zespolu_gospodarzy) REFERENCES nba.oficjalne_zespoly(id_oficjalnego_zespolu) ON DELETE CASCADE,
+    FOREIGN KEY (id_zespolu_gosci) REFERENCES nba.oficjalne_zespoly(id_oficjalnego_zespolu) ON DELETE CASCADE
 );
 
 CREATE TABLE nba.statystyki_meczu (
     id_zawodnika bigint,
     id_meczu varchar(20),
-    data_meczu date,
+    data_meczu nba.game_day,
     punkty_zawodnika int,
     asysty_zawodnika int,
     zbiorki_zawodnika int,
     przechwyty_zawodnika int,
     straty_zawodnika int,
     PRIMARY KEY (id_zawodnika, id_meczu, data_meczu),
-    FOREIGN KEY (id_zawodnika) REFERENCES nba.zawodnicy(id_zawodnika),
-    FOREIGN KEY (id_meczu, data_meczu) REFERENCES nba.mecze(id_meczu, data_meczu)
+    FOREIGN KEY (id_zawodnika) REFERENCES nba.zawodnicy(id_zawodnika) ON DELETE CASCADE,
+    FOREIGN KEY (id_meczu, data_meczu) REFERENCES nba.mecze(id_meczu, data_meczu) ON DELETE CASCADE
 );
 
 -- uzytkownicy

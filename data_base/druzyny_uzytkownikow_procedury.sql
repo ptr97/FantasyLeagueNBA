@@ -56,13 +56,6 @@ CREATE CONSTRAINT TRIGGER _02_zapewnijNiepowtarzalnoscZawodnikow
     INITIALLY DEFERRED
     FOR EACH ROW EXECUTE PROCEDURE nba.zapewnijNiepowtarzalnoscZawodnikow();
 
--- SELECT id_zawodnika, COUNT(*) FROM 
---                 nba.zawodnicy_zespoly_uzytkownikow
---                 WHERE id_zespolu_uzytkownika = 1 
---                 GROUP BY id_zawodnika
---                 HAVING COUNT(*) > 1
-
--- SELECT * FROM nba.zawodnicy_zespoly_uzytkownikow WHERE
 
 -- Procedury zapewniajace poprawnosc pozycji przy tworzeniu lub modyfikacji druzyny uzytkownika
 
