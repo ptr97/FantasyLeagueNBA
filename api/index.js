@@ -7,7 +7,6 @@ import Users from './controllers/Users'
 import FantasyTeams from './controllers/FantasyTeams'
 import OfficialTeams from './controllers/OfficialTeams'
 import Players from './controllers/Players'
-import Games from './controllers/Games'
 
 
 const app = express()
@@ -23,8 +22,9 @@ const router = express.Router()
 app.use('/api', router)
 
 
-app.get('/', (req, res) => {
+router.get('/', (req, res) => {
     res.status(200).json({ 
+        message: 'Welcome to fantasy-league-nba api!',
         routes: [
             {createUser: '/api/users (POST)'},
             {logIn: '/api/users/login (POST)'},
@@ -51,9 +51,6 @@ router.delete('/fantasy-teams/my-team', Auth.verifyToken, FantasyTeams.deleteTea
 router.put('/fantasy-teams/my-team', Auth.verifyToken, FantasyTeams.updateTeam)
 router.put('/fantasy-teams/my-team/info', Auth.verifyToken, FantasyTeams.updateTeamInfo)
 
-// Games
-
-
 // OfficialTeams
 router.get('/official-teams', OfficialTeams.allTeams)
 router.get('/official-teams/:id', OfficialTeams.getTeam)
@@ -74,7 +71,7 @@ app.use((err, req, res, next) => {
 
 app.listen(app.get('port'), () => {
 console.log('Express started on http://localhost:' +
-        app.get('port') + '; press Ctrl-C to terminate.')
+        app.get('port') + '/api/; press Ctrl-C to terminate.')
 })
 
 export default app
