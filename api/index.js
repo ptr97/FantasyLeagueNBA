@@ -1,18 +1,23 @@
 import express from 'express'
 import 'babel-polyfill'
+import cron from 'node-cron'
+import InsertionsToDb from './lib/nba_data_queries/getGames.js'
 import Auth from './middleware/Auth'
 import Users from './controllers/Users'
-import Admin from './controllers/Admin'
 import FantasyTeams from './controllers/FantasyTeams'
-import Games from './controllers/Games'
 import OfficialTeams from './controllers/OfficialTeams'
 import Players from './controllers/Players'
+import Games from './controllers/Games'
 
 
 const app = express()
 app.use(express.json())
 app.use(require('cors')())
 app.set('port', process.env.PORT || 3000)
+
+cron.schedule('00 00 8 * * *', () => {
+    InsertionsToDb.insertTonightGamesToDb()
+  })
 
 const router = express.Router()
 app.use('/api', router)
@@ -47,9 +52,6 @@ router.put('/fantasy-teams/my-team', Auth.verifyToken, FantasyTeams.updateTeam)
 router.put('/fantasy-teams/my-team/info', Auth.verifyToken, FantasyTeams.updateTeamInfo)
 
 // Games
-
-
-// Admin
 
 
 // OfficialTeams
