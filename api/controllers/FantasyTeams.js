@@ -1,5 +1,4 @@
 import db from '../db'
-import AuthHelper from './AuthHelper'
 
 const FantasyTeams = {
     async createTeam(req, res) {
@@ -26,13 +25,12 @@ const FantasyTeams = {
                 const arrayOfPromises = req.body.players.map(player => 
                     client.query(
                         createLineupQuery,
-                        [player.id, resultCreateTeamQuery.rows[0].id_zespolu_uzytkownika]
+                        [player.id_zawodnika, resultCreateTeamQuery.rows[0].id_zespolu_uzytkownika]
                     )
                 )
                 await Promise.all(arrayOfPromises)
                 await client.query('COMMIT')
             } catch(error) {
-                // console.log(error)
                 await client.query('ROLLBACK')
                 if(error.routine === 'exec_stmt_raise') {
                     return res.status(400).json({ 
@@ -54,8 +52,45 @@ const FantasyTeams = {
         return res.status(200).json({ message: 'Fantasy team created!' })
     },
 
+    async updateTeam(req, res) {
+        const selectQueryText = 'SELECT id_zespolu_uzytkownika FROM nba.zespoly_uzytkownikow WHERE id_uzytkownika = $1'
+        const deleteQueryText = 'DELETE FROM nba.zawodnicy_zespoly_uzytkownikow WHERE id_zespolu_uzytkownika = $1'
+        const createLineupQuery = `INSERT INTO nba.zawodnicy_zespoly_uzytkownikow (id_zawodnika, id_zespolu_uzytkownika) VALUES ($1, $2) RETURNING *`
+        const client = await db.pool.connect()
+        try {
+            const team = await client.query(selectQueryText, [req.user.id])
+            const teamId = team.rows[0].id_zespolu_uzytkownika
+            await client.query('BEGIN')
+            try {
+                await client.query(deleteQueryText, [teamId])
+                const arrayOfPromises = req.body.newPlayers.map(player => 
+                    client.query(
+                        createLineupQuery,
+                        [player.id_zawodnika, teamId]
+                    )
+                )
+                await Promise.all(arrayOfPromises)
+                await client.query('COMMIT')
+                return res.status(200).json({ 
+                    message: 'Team updated.'
+                })
+            } catch(error) {
+                await client.query('ROLLBACK')
+                if(error.routine === 'ExecConstraints' && error.constraint === 'zgodny_budzet') {
+                    return res.status(400).json({ message: 'Players exceeded team budget!' })
+                }
+                return res.status(400).json({
+                    message: error.detail,
+                    hint: error.hint
+                })
+            }
+        } finally {
+            client.release()
+        }
+    },
+
     async bestTeams(req, res) {
-        const queryText = 'SELECT uzyt_email, zes_nazwa, zes_wynik FROM nba.widok_uzytkownik_zespol ORDER BY zes_wynik LIMIT 10'
+        const queryText = 'SELECT * FROM nba.widok_uzytkownik_zespol ORDER BY wynik_zespolu_uzytkownika DESC LIMIT 10'
         try {
             const { rows } = await db.query(queryText)
             return res.status(200).json({ fantasyTeams: rows })
@@ -66,7 +101,7 @@ const FantasyTeams = {
     
     async myTeamInfo(req, res) {
         const teamInfoQuery = 'SELECT * FROM nba.zespoly_uzytkownikow WHERE id_uzytkownika = $1'
-        const playersQuery = 'SELECT zaw_id, zaw_imie, zaw_nazwisko, zaw_poz, zaw_zarobki FROM nba.widok_uzyt_zawodnicy WHERE uzyt_id = $1'
+        const playersQuery = 'SELECT * FROM nba.widok_uzyt_zawodnicy JOIN nba.widok_statystyki_zawodnikow USING(id_zawodnika) WHERE id_uzytkownika = $1'
         try {
             const myTeamInfo = await db.query(teamInfoQuery, [req.user.id])
             const myPlayers = await db.query(playersQuery, [req.user.id])
@@ -86,33 +121,6 @@ const FantasyTeams = {
             return res.status(200).json({ message: 'Team deleted' })
         } catch(error) {
             return res.status(400).json({ error })
-        }
-    },
-
-    // UPDATE nba.zawodnicy_zespoly_uzytkownikow SET id_zawodnika = 203991 where id_zawodnika = 202326 AND id_zespolu_uzytkownika = 116 RETURNING *;
-
-    async updateTeam(req, res) {
-        const selectQueryText = 'SELECT id_zespolu_uzytkownika FROM nba.zespoly_uzytkownikow WHERE id_uzytkownika = $1'
-        const updateQueryText = 'UPDATE nba.zawodnicy_zespoly_uzytkownikow SET id_zawodnika = $1 WHERE id_zawodnika = $2 AND id_zespolu_uzytkownika = $3 RETURNING *'
-        const client = await db.pool.connect()
-        try {
-            const team = await client.query(selectQueryText, [req.user.id])
-            const teamId = team.rows[0].id_zespolu_uzytkownika
-            await client.query('BEGIN')
-            try {
-                const { rows } = await client.query(updateQueryText, [
-                    req.body.newPlayerId, 
-                    req.body.oldPlayerId, 
-                    teamId
-                ])
-                await client.query('COMMIT')
-                return res.status(200).json({ newPlayer: rows[0] })
-            } catch(error) {
-                await client.query('ROLLBACK')
-                return res.status(400).json(error)
-            }
-        } finally {
-            client.release()
         }
     },
 

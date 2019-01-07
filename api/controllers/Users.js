@@ -4,10 +4,14 @@ import AuthHelper from './AuthHelper'
 const Users = {
     async createUser(req, res) {
         if(!req.body.email || !req.body.password || !req.body.firstName || !req.body.lastName) {
-            return res.status(400).json({ message: 'Some values are missing!' })
+            return res.status(400).json({ 
+                message: 'Some values are missing!'
+            })
         }
         if(!AuthHelper.isValidEmail(req.body.email)) {
-            return res.status(400).json({ message: 'Please provide a valid e-mail address!' })
+            return res.status(400).json({ 
+                message: 'Please provide a valid e-mail address!'
+            })
         }
 
         const hashPassword = AuthHelper.hashPassword(req.body.password)
@@ -27,33 +31,47 @@ const Users = {
             return res.status(201).json({ token })
         } catch(error) {
             if(error.routine === '_bt_check_unique') {
-                return res.status(400).json({ message: 'User with that email address already exists!' })
+                return res.status(400).json({ 
+                    message: 'User with that email address already exists!'
+                })
             }
-            return res.status(400).json(error)
+            return res.status(400).json({
+                message: error
+            })
         }
     },
 
     async logIn(req, res) {
         if(!req.body.email || !req.body.password) {
-            return res.status(400).json({ message: 'Some values are missing!' })
+            return res.status(400).json({ 
+                message: 'Some values are missing!'
+            })
         }
         if(!AuthHelper.isValidEmail(req.body.email)) {
-            return res.status(400).json({ message: 'Please provide a valid e-mail address!' })
+            return res.status(400).json({ 
+                message: 'Please provide a valid e-mail address!'
+            })
         }
 
         const queryText = `SELECT * FROM nba.uzytkownicy WHERE email_uzytkownika = $1`
         try {
             const { rows } = await db.query(queryText, [req.body.email])
             if(!rows[0]) {
-                return res.status(400).json({ message: 'The credentials you provided are incorrect!' })
+                return res.status(400).json({ 
+                    message: 'The credentials you provided are incorrect!' 
+                })
             }
             if(!AuthHelper.comparePassword(rows[0].haslo_uzytkownika, req.body.password)) {
-                return res.status(400).json({ message: 'The credentials you provided are incorrect!' })
+                return res.status(400).json({ 
+                    message: 'The credentials you provided are incorrect!'
+                })
             }
             const token = AuthHelper.generateToken(rows[0].id_uzytkownika)
             return res.status(200).json({ token })
         } catch(error) {
-            return res.status(400).json(error)
+            return res.status(400).json({
+                message: error
+            })
         }
     },
 
@@ -62,13 +80,19 @@ const Users = {
         try {
             const { rows } = await db.query(deleteQuery, [req.user.id])
             if(!rows[0]) {
-                return res.status(400).json({ message: 'User not found!' })
+                return res.status(400).json({ 
+                    message: 'User not found!'
+                })
             }
             else {
-                return res.status(200).json({ message: 'Account deleted' })
+                return res.status(200).json({ 
+                    message: 'Account deleted'
+                })
             }
         } catch(error) {
-            return res.status(400).json(error)
+            return res.status(400).json({
+                message: error
+            })
         }
     },
 
@@ -77,13 +101,19 @@ const Users = {
         try {
             const { rows } = await db.query(queryText, [req.user.id])
             if(!rows[0]) {
-                return res.status(400).json({ message: 'User not found!' })
+                return res.status(400).json({ 
+                    message: 'User not found!' 
+                })
             }
             else {
-                return res.status(200).json(rows[0])
+                return res.status(200).json({
+                    data: rows[0]
+                })
             }
         } catch(error) {
-            return res.status(400).json(error)
+            return res.status(400).json({
+                message: error
+            })
         }
     },
 
@@ -93,7 +123,9 @@ const Users = {
         try {
             const { rows } = await db.query(selectQueryText, [req.user.id])
             if(!rows[0]) {
-                return res.status(400).json({ message: 'User not found!' })
+                return res.status(400).json({ 
+                    message: 'User not found!'
+                })
             }
             const queryValues = [
                 req.body.email || rows[0].email_uzytkownika,
@@ -102,9 +134,14 @@ const Users = {
                 req.user.id
             ]
             const response = await db.query(updateQueryText, queryValues)
-            return res.status(200).json(response.rows[0])
+            return res.status(200).json({ 
+                data: response.rows[0],
+                message: 'Profile updated.'
+            })
         } catch(error) {
-            return res.status(400).json(error)
+            return res.status(400).json({
+                message: error
+            })
         }
     },
 
@@ -116,10 +153,14 @@ const Users = {
         try {
             const { rows } = await db.query(checkQueryText, [req.user.id])
             if(!rows[0]) {
-                return res.status(400).json({ message: 'User not found!' })
+                return res.status(400).json({ 
+                    message: 'User not found!'
+                })
             }
             if(!AuthHelper.comparePassword(rows[0].haslo_uzytkownika, req.body.oldPassword)) {
-                return res.status(400).json({ message: 'You provide wrong password!' })
+                return res.status(400).json({ 
+                    message: 'You provide wrong password!'
+                })
             }
             const hashNewPassword = AuthHelper.hashPassword(req.body.newPassword)
             const queryValues = [
@@ -127,10 +168,13 @@ const Users = {
                 req.user.id
             ]
             await db.query(updateQueryText, queryValues)
-            return res.status(200).json({ message: 'Password updated' })
-            
+            return res.status(200).json({ 
+                message: 'Password updated.'
+            })
         } catch(error) {
-            return res.status(400).json(error)
+            return res.status(400).json({
+                message: error
+            })
         }
     },
 }
