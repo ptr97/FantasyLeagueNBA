@@ -16,7 +16,7 @@ app.set('port', process.env.PORT || 3000)
 
 cron.schedule('00 00 8 * * *', () => {
     InsertionsToDb.insertTonightGamesToDb()
-  })
+})
 
 const router = express.Router()
 app.use('/api', router)
@@ -25,13 +25,6 @@ app.use('/api', router)
 router.get('/', (req, res) => {
     res.status(200).json({ 
         message: 'Welcome to fantasy-league-nba api!',
-        routes: [
-            {createUser: '/api/users (POST)'},
-            {logIn: '/api/users/login (POST)'},
-            {deleteUser: '/api/users/me (POST)'},
-            {updateUserInfo: '/api/users/me (PUT)'},
-            {readUserInfo: '/api/users/me (GET)'},
-        ]
     })
 })
 
@@ -54,10 +47,17 @@ router.put('/fantasy-teams/my-team/info', Auth.verifyToken, FantasyTeams.updateT
 // OfficialTeams
 router.get('/official-teams', OfficialTeams.allTeams)
 router.get('/official-teams/:id', OfficialTeams.getTeam)
+router.get('/official-teams/:id/players', OfficialTeams.getTeamPlayers)
 
 // Players
 router.get('/players', Players.allPlayers)
+router.get('/players/page/:no', Players.allPlayersPagination)
+router.get('/players/league-leaders/points', Players.leagueLeadersPoints)
+router.get('/players/league-leaders/asists', Players.leagueLeadersAsists)
+router.get('/players/league-leaders/rebounds', Players.leagueLeadersRebounds)
 router.get('/players/:id', Players.getPlayer)
+router.get('/players/:id/stats', Players.getPlayerStats)
+
 
 // 404 && 500
 app.use((req, res) => { 
