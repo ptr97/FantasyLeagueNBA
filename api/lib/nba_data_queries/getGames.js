@@ -88,7 +88,6 @@ const GamesFromDay = {
                     })
                 )
             )
-            // console.log(playersStats)
             playersStats.map(async stats => {
                 return stats.map(async player => {
                     await db.query('INSERT INTO nba.statystyki_meczu VALUES ($1, $2, $3, $4, $5, $6, $7, $8)', [
@@ -137,7 +136,7 @@ const InsertionsToDb = {
         }
     },
 
-    async insertGamesGamesToDbFrom(day) {
+    async insertGamesToDbFrom(day) {
         try {
             await GamesFromDay.getGamesWithStatsFrom(day)
         } catch(error) {
@@ -149,19 +148,11 @@ const InsertionsToDb = {
 
 // InsertionsToDb.insertPastGamesToDb()
 
-// InsertionsToDb.insertTonightGamesToDb()
 
-// Very big data sets - 4 match days are around 1000 rows in match statistics table
-// TODO - make past games insertions look better
-// InsertionsToDb.insertGamesGamesToDbFrom(20181016)
-// InsertionsToDb.insertGamesGamesToDbFrom(20181017)
-// InsertionsToDb.insertGamesGamesToDbFrom(20181018)
-// InsertionsToDb.insertGamesGamesToDbFrom(20181019)
-// InsertionsToDb.insertGamesGamesToDbFrom(20181020)
-// InsertionsToDb.insertGamesGamesToDbFrom(20181021)
-// InsertionsToDb.insertGamesGamesToDbFrom(20181022)
-// InsertionsToDb.insertGamesGamesToDbFrom(20181023)
-// InsertionsToDb.insertGamesGamesToDbFrom(20181024)
-// InsertionsToDb.insertGamesGamesToDbFrom(20181025)
+// InsertionsToDb.insertGamesToDbFrom(20181016)
+// InsertionsToDb.insertGamesToDbFrom(20190103)
+
+
+// InsertionsToDb.insertTonightGamesToDb()
 
 export default InsertionsToDb

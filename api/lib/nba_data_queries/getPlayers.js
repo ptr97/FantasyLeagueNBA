@@ -15,7 +15,7 @@ const Players = {
                     nazwisko_zawodnika: player.lastName,
                     imie_zawodnika: player.firstName,
                     pozycja_zawodnika: player.pos,
-                    numer_koszulki: player.jersey,
+                    numer_koszulki: player.jersey || '0',
                     waga_zawodnika: player.weightKilograms,
                     wzrost_zawodnika: player.heightMeters
             }))
