@@ -25,115 +25,138 @@ const larryData = {
 const myPlayers = [
     {
         position: 'G',
-        id: 201939 // Curry
+        id_zawodnika: 201939 // Curry
     },
     {
         position: 'G',
-        id: 202691 // Thompson
+        id_zawodnika: 202691 // Thompson
     },
     {
         position: 'F',
-        id: 201142 // Durant
+        id_zawodnika: 201142 // Durant
     },
     {
         position: 'F',
-        id: 203110 // Green
+        id_zawodnika: 203110 // Green
     },
     {
         position: 'C',
-        id: 202326 // Cousins
+        id_zawodnika: 202326 // Cousins
+    }
+]
+
+const myNewPlayers = [
+    {
+        position: 'G',
+        id_zawodnika: 201939 // Curry
+    },
+    {
+        position: 'G',
+        id_zawodnika: 203078 // Beal
+    },
+    {
+        position: 'F',
+        id_zawodnika: 201142 // Durant
+    },
+    {
+        position: 'F',
+        id_zawodnika: 203110 // Green
+    },
+    {
+        position: 'C',
+        id_zawodnika: 203991 // Capela
     }
 ]
 
 const tooManyGuards = [
     {
         position: 'G',
-        id: 201939 // Curry
+        id_zawodnika: 201939 // Curry
     },
     {
         position: 'G',
-        id: 202691 // Thompson
+        id_zawodnika: 202691 // Thompson
     },
     {
         position: 'G',
-        id: 203078 // Beal
+        id_zawodnika: 203078 // Beal
     },
     {
         position: 'F',
-        id: 203110 // Green
+        id_zawodnika: 203110 // Green
     },
     {
         position: 'C',
-        id: 202326 // Cousins
+        id_zawodnika: 202326 // Cousins
     }
 ]
 
 const tooManyForwards = [
     {
         position: 'G',
-        id: 201939 // Curry
+        id_zawodnika: 201939 // Curry
     },
     {
         position: 'F',
-        id: 2546 // Carmelo Anthony
+        id_zawodnika: 2546 // Carmelo Anthony
     },
     {
         position: 'F',
-        id: 201142 // Durant
+        id_zawodnika: 201142 // Durant
     },
     {
         position: 'F',
-        id: 203110 // Green
+        id_zawodnika: 203110 // Green
     },
     {
         position: 'C',
-        id: 202326 // Cousins
+        id_zawodnika: 202326 // Cousins
     }
 ]
 
 const tooManyCenters = [
     {
         position: 'C',
-        id: 203991 // Clint Capela
+        id_zawodnika: 203991 // Clint Capela
     },
     {
         position: 'G',
-        id: 202691 // Thompson
+        id_zawodnika: 202691 // Thompson
     },
     {
         position: 'F',
-        id: 201142 // Durant
+        id_zawodnika: 201142 // Durant
     },
     {
         position: 'F',
-        id: 203110 // Green
+        id_zawodnika: 203110 // Green
     },
     {
         position: 'C',
-        id: 202326 // Cousins
+        id_zawodnika: 202326 // Cousins
     }
 ]
 
 const expensivePlayers = [
     {
         position: 'G',
-        id: 201939 // Curry
+        id_zawodnika: 201939 // Curry
     },
     {
         position: 'G',
-        id: 202691 // Thompson
+        id_zawodnika: 202691 // Thompson
     },
     {
         position: 'F',
-        id: 201142 // Durant
+        id_zawodnika: 201142 // Durant
     },
     {
         position: 'F',
-        id: 203110 // Green
+        id_zawodnika: 203110 // Green
     },
     {
         position: 'C',
-        id: 202326 // Cousins
+        id_zawodnika: 202326 // Cousins
     }
 ]
 
@@ -240,15 +263,15 @@ describe(`Fantasy Teams`, () => {
                 players: [
                     {
                         position: 'G',
-                        id: 201939 // Curry
+                        id_zawodnika: 201939 // Curry
                     },
                     {
                         position: 'G',
-                        id: 202691 // Thompson
+                        id_zawodnika: 202691 // Thompson
                     },
                     {
                         position: 'F',
-                        id: 201142 // Durant
+                        id_zawodnika: 201142 // Durant
                     }
                 ]
             })
@@ -269,27 +292,27 @@ describe(`Fantasy Teams`, () => {
                 players: [
                     {
                         position: 'G',
-                        id: 201939 // Curry
+                        id_zawodnika: 201939 // Curry
                     },
                     {
                         position: 'G',
-                        id: 202691 // Thompson
+                        id_zawodnika: 202691 // Thompson
                     },
                     {
                         position: 'F',
-                        id: 201142 // Durant
+                        id_zawodnika: 201142 // Durant
                     },
                     {
                         position: 'G',
-                        id: 203078 // Beal
+                        id_zawodnika: 203078 // Beal
                     },
                     {
                         position: 'F',
-                        id: 203110 // Green
+                        id_zawodnika: 203110 // Green
                     },
                     {
                         position: 'C',
-                        id: 202326 // Cousins
+                        id_zawodnika: 202326 // Cousins
                     }
                 ]
             })
@@ -310,23 +333,23 @@ describe(`Fantasy Teams`, () => {
                 players: [
                     {
                         position: 'G',
-                        id: 201939 // Curry
+                        id_zawodnika: 201939 // Curry
                     },
                     {
                         position: 'G',
-                        id: 201939 // Curry
+                        id_zawodnika: 201939 // Curry
                     },
                     {
                         position: 'F',
-                        id: 201142 // Durant
+                        id_zawodnika: 201142 // Durant
                     },
                     {
                         position: 'F',
-                        id: 203110 // Green
+                        id_zawodnika: 203110 // Green
                     },
                     {
                         position: 'C',
-                        id: 202326 // Cousins
+                        id_zawodnika: 202326 // Cousins
                     }
                 ]
             })
@@ -339,7 +362,7 @@ describe(`Fantasy Teams`, () => {
     })
 
     it(`should not create fantasy team if players salary is exceeded`, async () => {
-        const ids = expensivePlayers.map(player => player.id)
+        const ids = expensivePlayers.map(player => player.id_zawodnika)
         const queryText = 'UPDATE nba.zawodnicy SET zarobki_zawodnika = $1 WHERE id_zawodnika = $2 OR id_zawodnika = $3 OR id_zawodnika = $4 OR id_zawodnika = $5 OR id_zawodnika = $6'
         try {
             await db.query(queryText, [99, ...ids])
@@ -350,7 +373,6 @@ describe(`Fantasy Teams`, () => {
                     teamName: 'MyUniqueTeam',
                     players: expensivePlayers
                 })
-
             res.should.have.status(400)
             res.body.should.have.property('message').eql('Players exceeded team budget!')
             await db.query(queryText, [70, ...ids])
@@ -409,7 +431,7 @@ describe(`Fantasy Teams`, () => {
                 res.should.have.status(200)
                 res.body.should.have.property('fantasyTeams')
                 res.body.fantasyTeams.should.be.an('array')
-                res.body.fantasyTeams[0].should.have.property('zes_nazwa').eql('MyUniqueTeam')
+                res.body.fantasyTeams[0].should.have.property('nazwa_zespolu_uzytkownika').eql('MyUniqueTeam')
                 done()
             })
     })
@@ -436,13 +458,11 @@ describe(`Fantasy Teams`, () => {
             .put('/api/fantasy-teams/my-team')
             .set('x-access-token', mikeToken)
             .send({
-                newPlayerId: 203991,
-                oldPlayerId: 202326,
+                newPlayers: myNewPlayers
             })
             .end((err, res) => {
                 res.should.have.status(200)
-                res.body.should.have.property('newPlayer')
-                res.body.newPlayer.should.have.property('id_zawodnika').eql('203991')
+                res.body.should.have.property('message').eql('Team updated.')
                 done()
             })
     })

@@ -237,9 +237,9 @@ describe('Users', () => {
             .end((err, res) => {
                 res.should.have.status(200)
                 res.should.be.a('Object')
-                res.body.should.have.property('email_uzytkownika').eql('michael@jordan.com')
-                res.body.should.have.property('imie_uzytkownika').eql('Michael')
-                res.body.should.have.property('nazwisko_uzytkownika').eql('Jordan')
+                res.body.data.should.have.property('email_uzytkownika').eql('michael@jordan.com')
+                res.body.data.should.have.property('imie_uzytkownika').eql('Michael')
+                res.body.data.should.have.property('nazwisko_uzytkownika').eql('Jordan')
                 done()
             })
     })
@@ -253,8 +253,8 @@ describe('Users', () => {
             })
             .end((err, res) => {
                 res.should.have.status(200)
-                res.body.should.have.property('imie_uzytkownika').eql('Mike')
-                res.body.should.have.property('nazwisko_uzytkownika').eql('Jordan')
+                res.body.data.should.have.property('imie_uzytkownika').eql('Mike')
+                res.body.data.should.have.property('nazwisko_uzytkownika').eql('Jordan')
                 done()
             })
     })
@@ -284,7 +284,7 @@ describe('Users', () => {
             })
             .end((err, res) => {
                 res.should.have.status(200)
-                res.body.should.have.property('message').eql('Password updated')
+                res.body.should.have.property('message').eql('Password updated.')
                 done()
             })
     })
@@ -299,7 +299,7 @@ describe('Users', () => {
             })
             .end((err, res) => {
                 res.should.have.status(200)
-                res.body.should.have.property('message').eql('Password updated')
+                res.body.should.have.property('message').eql('Password updated.')
                 done()
             })
     })
