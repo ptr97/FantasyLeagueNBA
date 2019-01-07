@@ -20,7 +20,7 @@ CREATE DOMAIN nba.position AS varchar(5) NOT NULL CHECK (VALUE ~ '^[GFC](-[GFC])
 CREATE DOMAIN nba.jerseyNo AS varchar(3) NOT NULL CHECK (VALUE ~ '^[0-9]{1,2}$');
 CREATE DOMAIN nba.salary AS int DEFAULT 70 CHECK (VALUE > 0 AND VALUE <= 100);
 CREATE DOMAIN nba.weight AS numeric(4, 1) NOT NULL CHECK (VALUE > 50.0 AND VALUE < 180.0);
-CREATE DOMAIN nba.height AS numeric(3, 2) NOT NULL CHECK (VALUE > 1.40 AND VALUE < 2.60);
+CREATE DOMAIN nba.height AS numeric(4, 2) NOT NULL CHECK (VALUE > 1.40 AND VALUE < 2.60);
 
 CREATE TABLE nba.zawodnicy (
     id_zawodnika bigint,
