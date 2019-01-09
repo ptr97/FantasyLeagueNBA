@@ -8,8 +8,8 @@ CREATE FUNCTION nba.aktualizujZarobkiZawodnikow() RETURNS TRIGGER AS $$
             FROM nba.widok_statystyki_zawodnikow WHERE id_zawodnika = NEW.id_zawodnika;
         IF(wynik_zawodnika >= 50) THEN
             wynik_zawodnika := 50;
-        ELSIF(wynik_zawodnika <= 30) THEN
-            wynik_zawodnika := 30;
+        ELSIF(wynik_zawodnika <= 25) THEN
+            wynik_zawodnika := 25;
         END IF;
         UPDATE nba.zawodnicy SET zarobki_zawodnika = 2 * wynik_zawodnika WHERE id_zawodnika = NEW.id_zawodnika;
         RETURN NEW;

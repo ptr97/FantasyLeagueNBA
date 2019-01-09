@@ -16,8 +16,8 @@ const Players = {
                     imie_zawodnika: player.firstName,
                     pozycja_zawodnika: player.pos,
                     numer_koszulki: player.jersey || '0',
-                    waga_zawodnika: player.weightKilograms,
-                    wzrost_zawodnika: player.heightMeters
+                    waga_zawodnika: player.weightKilograms || 100,
+                    wzrost_zawodnika: player.heightMeters || 2.0
             }))
             console.log(toInsert)
             
