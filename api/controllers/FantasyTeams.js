@@ -31,6 +31,7 @@ const FantasyTeams = {
                 await Promise.all(arrayOfPromises)
                 await client.query('COMMIT')
             } catch(error) {
+                console.log(error)
                 await client.query('ROLLBACK')
                 if(error.routine === 'exec_stmt_raise') {
                     return res.status(400).json({ 
@@ -53,20 +54,38 @@ const FantasyTeams = {
     },
 
     async updateTeam(req, res) {
-        const selectQueryText = 'SELECT id_zespolu_uzytkownika FROM nba.zespoly_uzytkownikow WHERE id_uzytkownika = $1'
+        const selectTeamIdText = 'SELECT id_zespolu_uzytkownika FROM nba.zespoly_uzytkownikow WHERE id_uzytkownika = $1'
+        const selectTeamLineupText = 'SELECT * FROM nba.zawodnicy_zespoly_uzytkownikow WHERE id_zespolu_uzytkownika = $1'
         const deleteQueryText = 'DELETE FROM nba.zawodnicy_zespoly_uzytkownikow WHERE id_zespolu_uzytkownika = $1'
-        const createLineupQuery = `INSERT INTO nba.zawodnicy_zespoly_uzytkownikow (id_zawodnika, id_zespolu_uzytkownika) VALUES ($1, $2) RETURNING *`
+        const createLineupQuery = `INSERT INTO nba.zawodnicy_zespoly_uzytkownikow (id_zawodnika, id_zespolu_uzytkownika, wartosc_kontraktu) VALUES ($1, $2, $3) RETURNING *`
         const client = await db.pool.connect()
         try {
-            const team = await client.query(selectQueryText, [req.user.id])
+            const team = await client.query(selectTeamIdText, [req.user.id])
             const teamId = team.rows[0].id_zespolu_uzytkownika
             await client.query('BEGIN')
             try {
+                const { rows } = await client.query(selectTeamLineupText, [teamId])
+                
+                const playersToInsert = req.body.newPlayers.map(newPlayer => {
+                    const oldPlayersMatch = rows.find(oldPlayer => oldPlayer.id_zawodnika === newPlayer.id_zawodnika)
+
+                    const oldContractValue = oldPlayersMatch ? oldPlayersMatch.wartosc_kontraktu : 999
+
+                    const newContractValue = newPlayer.wartosc_kontraktu || 999
+
+                    const bestOption = Math.min(oldContractValue, newContractValue, newPlayer.zarobki_zawodnika)
+
+                    return {
+                        id: newPlayer.id_zawodnika,
+                        contract: bestOption
+                    }
+                
+                })
                 await client.query(deleteQueryText, [teamId])
-                const arrayOfPromises = req.body.newPlayers.map(player => 
+                const arrayOfPromises = playersToInsert.map(player => 
                     client.query(
                         createLineupQuery,
-                        [player.id_zawodnika, teamId]
+                        [player.id, teamId, player.contract]
                     )
                 )
                 await Promise.all(arrayOfPromises)

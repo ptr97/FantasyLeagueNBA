@@ -1,3 +1,20 @@
+-- Procedury potrzebne przy wstawianiu rekordu do bazy danych
+CREATE FUNCTION nba.podpiszKontraktyZawodnikow() RETURNS TRIGGER AS $$
+    DECLARE
+        obecne_zarobki_zawodnika int;
+    BEGIN
+        IF(NEW.wartosc_kontraktu = 0 OR NEW.wartosc_kontraktu IS NULL) THEN
+            SELECT INTO obecne_zarobki_zawodnika zarobki_zawodnika FROM nba.zawodnicy WHERE id_zawodnika = NEW.id_zawodnika;
+            UPDATE nba.zawodnicy_zespoly_uzytkownikow SET wartosc_kontraktu = obecne_zarobki_zawodnika WHERE id_zawodnika = NEW.id_zawodnika AND id_zespolu_uzytkownika = NEW.id_zespolu_uzytkownika;
+        END IF;
+        RETURN NEW;
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE CONSTRAINT TRIGGER _01_podpiszKontraktyZawodnikow 
+    AFTER INSERT ON nba.zawodnicy_zespoly_uzytkownikow 
+    FOR EACH ROW EXECUTE PROCEDURE nba.podpiszKontraktyZawodnikow();
+
 -- Procedury zapewniajace poprawna liczbe (5) zawodnikow w druzynie uzytkownika
 
 CREATE FUNCTION nba.czyPrawidlowaLiczbaZawodnikow(liczba_zawodnikow int) RETURNS BOOLEAN AS $$
@@ -23,7 +40,7 @@ CREATE FUNCTION nba.zapewnijPoprawnaIloscZawodnikow() RETURNS TRIGGER AS $$
     END;
 $$ LANGUAGE plpgsql;
 
-CREATE CONSTRAINT TRIGGER _01_zapewnijPoprawnaIloscZawodnikow 
+CREATE CONSTRAINT TRIGGER _02_zapewnijPoprawnaIloscZawodnikow 
     AFTER INSERT OR UPDATE ON nba.zawodnicy_zespoly_uzytkownikow 
     INITIALLY DEFERRED
     FOR EACH ROW EXECUTE PROCEDURE nba.zapewnijPoprawnaIloscZawodnikow();
@@ -51,7 +68,7 @@ CREATE FUNCTION nba.zapewnijNiepowtarzalnoscZawodnikow() RETURNS TRIGGER AS $$
     END;
 $$ LANGUAGE plpgsql;
 
-CREATE CONSTRAINT TRIGGER _02_zapewnijNiepowtarzalnoscZawodnikow 
+CREATE CONSTRAINT TRIGGER _03_zapewnijNiepowtarzalnoscZawodnikow 
     AFTER INSERT OR UPDATE ON nba.zawodnicy_zespoly_uzytkownikow 
     INITIALLY DEFERRED
     FOR EACH ROW EXECUTE PROCEDURE nba.zapewnijNiepowtarzalnoscZawodnikow();
@@ -98,7 +115,7 @@ CREATE FUNCTION nba.zapewnijPoprawnoscObroncow() RETURNS TRIGGER AS $$
     END;
 $$ LANGUAGE plpgsql;
 
-CREATE CONSTRAINT TRIGGER _03_zapewnijPoprawnoscObroncow 
+CREATE CONSTRAINT TRIGGER _04_zapewnijPoprawnoscObroncow 
     AFTER INSERT OR UPDATE ON nba.zawodnicy_zespoly_uzytkownikow 
     INITIALLY DEFERRED
     FOR EACH ROW EXECUTE PROCEDURE nba.zapewnijPoprawnoscObroncow();
@@ -124,7 +141,7 @@ CREATE FUNCTION nba.zapewnijPoprawnoscSkrzydlowych() RETURNS TRIGGER AS $$
     END;
 $$ LANGUAGE plpgsql;
 
-CREATE CONSTRAINT TRIGGER _04_zapewnijPoprawnoscskrzydlowych 
+CREATE CONSTRAINT TRIGGER _05_zapewnijPoprawnoscskrzydlowych 
     AFTER INSERT OR UPDATE ON nba.zawodnicy_zespoly_uzytkownikow 
     INITIALLY DEFERRED
     FOR EACH ROW EXECUTE PROCEDURE nba.zapewnijPoprawnoscskrzydlowych();
@@ -150,7 +167,7 @@ CREATE FUNCTION nba.zapewnijPoprawnoscCentrow() RETURNS TRIGGER AS $$
     END;
 $$ LANGUAGE plpgsql;
 
-CREATE CONSTRAINT TRIGGER _05_zapewnijPoprawnoscCentrow 
+CREATE CONSTRAINT TRIGGER _06_zapewnijPoprawnoscCentrow 
     AFTER INSERT OR UPDATE ON nba.zawodnicy_zespoly_uzytkownikow 
     INITIALLY DEFERRED
     FOR EACH ROW EXECUTE PROCEDURE nba.zapewnijPoprawnoscCentrow();
@@ -161,13 +178,11 @@ CREATE CONSTRAINT TRIGGER _05_zapewnijPoprawnoscCentrow
 CREATE FUNCTION nba.policzZarobkiZawodnikow() RETURNS TRIGGER AS $$
     DECLARE
         suma_zarobkow int := 0;
-    BEGIN
-        SELECT INTO suma_zarobkow SUM(z.zarobki_zawodnika) 
-            FROM nba.zawodnicy_zespoly_uzytkownikow zzu 
-            NATURAL JOIN nba.zawodnicy z 
-            WHERE id_zawodnika IN 
-                (SELECT id_zawodnika FROM nba.zawodnicy_zespoly_uzytkownikow 
-                WHERE id_zespolu_uzytkownika = NEW.id_zespolu_uzytkownika);
+    BEGIN 
+        WITH zawodnicy_tej_druzyny AS 
+            (SELECT id_zawodnika, wartosc_kontraktu FROM nba.zawodnicy_zespoly_uzytkownikow 
+                WHERE id_zespolu_uzytkownika = NEW.id_zespolu_uzytkownika)
+        SELECT INTO suma_zarobkow SUM(ztd.wartosc_kontraktu) FROM zawodnicy_tej_druzyny ztd;
 
         UPDATE nba.zespoly_uzytkownikow SET suma_wynagrodzen_zawodnikow = suma_zarobkow 
             WHERE id_zespolu_uzytkownika = NEW.id_zespolu_uzytkownika;
@@ -175,7 +190,7 @@ CREATE FUNCTION nba.policzZarobkiZawodnikow() RETURNS TRIGGER AS $$
     END;
 $$ LANGUAGE plpgsql;
 
-CREATE CONSTRAINT TRIGGER _06_policzZarobkiZawodnikow 
+CREATE CONSTRAINT TRIGGER _07_policzZarobkiZawodnikow 
     AFTER INSERT OR UPDATE ON nba.zawodnicy_zespoly_uzytkownikow 
     INITIALLY DEFERRED
     FOR EACH ROW EXECUTE PROCEDURE nba.policzZarobkiZawodnikow();

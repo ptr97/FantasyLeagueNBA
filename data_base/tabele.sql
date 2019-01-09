@@ -95,6 +95,7 @@ CREATE TABLE nba.zespoly_uzytkownikow (
 CREATE TABLE nba.zawodnicy_zespoly_uzytkownikow (
     id_zawodnika bigint,
     id_zespolu_uzytkownika bigint,
+    wartosc_kontraktu int DEFAULT 0 CHECK (wartosc_kontraktu >= 0),
     FOREIGN KEY (id_zawodnika) REFERENCES nba.zawodnicy(id_zawodnika) ON DELETE CASCADE,
     FOREIGN KEY (id_zespolu_uzytkownika) REFERENCES nba.zespoly_uzytkownikow(id_zespolu_uzytkownika) ON DELETE CASCADE
 );

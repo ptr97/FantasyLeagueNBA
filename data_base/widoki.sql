@@ -16,7 +16,8 @@ CREATE VIEW nba.widok_uzytkownik_zespol AS
 CREATE VIEW nba.widok_zespol_uzyt_zawodnicy AS 
     SELECT zes.id_zespolu_uzytkownika, 
         zes.nazwa_zespolu_uzytkownika, 
-        zzu.id_zawodnika, 
+        zzu.id_zawodnika,
+        zzu.wartosc_kontraktu, 
         zaw.nazwisko_zawodnika, 
         zaw.imie_zawodnika, 
         zaw.pozycja_zawodnika, 
@@ -37,7 +38,8 @@ CREATE VIEW nba.widok_uzyt_zawodnicy AS
         zzu.imie_zawodnika, 
         zzu.nazwisko_zawodnika, 
         zzu.pozycja_zawodnika, 
-        zzu.zarobki_zawodnika 
+        zzu.zarobki_zawodnika,
+        zzu.wartosc_kontraktu 
     FROM nba.widok_uzytkownik_zespol wuz 
     JOIN nba.widok_zespol_uzyt_zawodnicy zzu 
     USING (id_zespolu_uzytkownika);
@@ -66,11 +68,11 @@ CREATE VIEW nba.widok_zespoly_bilans AS
         oz.konferencja_oficjalnego_zespolu,
         (SELECT COUNT(*) FROM nba.mecze 
             WHERE (id_zespolu_gospodarzy = oz.id_oficjalnego_zespolu AND punkty_zespolu_gospodarzy > punkty_zespolu_gosci)
-            OR (id_zespolu_gosci = oz.id_oficjalnego_zespolu AND punkty_zespolu_gosci > punkty_zespolu_gosci)
+            OR (id_zespolu_gosci = oz.id_oficjalnego_zespolu AND punkty_zespolu_gosci > punkty_zespolu_gospodarzy)
         ) AS zwyciestwa,
         (SELECT COUNT(*) FROM nba.mecze 
             WHERE (id_zespolu_gospodarzy = oz.id_oficjalnego_zespolu AND punkty_zespolu_gospodarzy < punkty_zespolu_gosci)
-            OR (id_zespolu_gosci = oz.id_oficjalnego_zespolu AND punkty_zespolu_gosci < punkty_zespolu_gosci)
+            OR (id_zespolu_gosci = oz.id_oficjalnego_zespolu AND punkty_zespolu_gosci < punkty_zespolu_gospodarzy)
         ) AS porazki
     FROM nba.oficjalne_zespoly oz;    
 
@@ -292,10 +294,3 @@ CREATE VIEW nba.widok_statystyki_centrow AS
         AND
         nba.czyCenter(z.id_zawodnika) = TRUE
     ORDER BY PPG DESC;
-
-
--- -- ???? wszystko???
--- CREATE VIEW nba.widok_uzyt_zawodnicy_statystyki AS 
---     SELECT * FROM nba.widok_uzyt_zawodnicy 
---     JOIN nba.widok_statystyki_zawodnikow 
---     USING (id_zawodnika);
