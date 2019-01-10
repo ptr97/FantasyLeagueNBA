@@ -37,7 +37,6 @@ CREATE TABLE nba.zawodnicy (
 );
 
 -- mecze
-
 CREATE DOMAIN nba.game_day AS varchar(9) CHECK (VALUE ~ '^(201[8-9])(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])$');
 
 CREATE TABLE nba.mecze (
@@ -85,10 +84,8 @@ CREATE TABLE nba.zespoly_uzytkownikow (
     id_uzytkownika bigint not null,
     wynik_zespolu_uzytkownika bigint default 0,
     budzet_zespolu_uzytkownika int default 440 CHECK (budzet_zespolu_uzytkownika > 0),
-    suma_wynagrodzen_zawodnikow int default 0 CHECK (suma_wynagrodzen_zawodnikow >= 0),
     nazwa_zespolu_uzytkownika varchar(40) unique,
     PRIMARY KEY (id_zespolu_uzytkownika),
-    CONSTRAINT zgodny_budzet CHECK (suma_wynagrodzen_zawodnikow <= budzet_zespolu_uzytkownika),
     FOREIGN KEY (id_uzytkownika) REFERENCES nba.uzytkownicy(id_uzytkownika) ON DELETE CASCADE
 );
 

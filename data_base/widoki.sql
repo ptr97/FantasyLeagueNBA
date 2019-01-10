@@ -7,7 +7,7 @@ CREATE VIEW nba.widok_uzytkownik_zespol AS
         zes.id_zespolu_uzytkownika, 
         zes.nazwa_zespolu_uzytkownika, 
         zes.wynik_zespolu_uzytkownika, 
-        zes.suma_wynagrodzen_zawodnikow, 
+        (SELECT SUM(wartosc_kontraktu) FROM nba.zawodnicy_zespoly_uzytkownikow WHERE id_zespolu_uzytkownika = zes.id_zespolu_uzytkownika) as suma_wynagrodzen_zawodnikow,
         zes.budzet_zespolu_uzytkownika 
     FROM nba.uzytkownicy uzyt 
     NATURAL JOIN nba.zespoly_uzytkownikow zes;

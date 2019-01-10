@@ -1,4 +1,4 @@
--- Procedury potrzebne przy wstawianiu rekordu do bazy danych
+-- Procedura aktualizujaca wartosci kontraktow zawodnikow w druzynach
 CREATE FUNCTION nba.podpiszKontraktyZawodnikow() RETURNS TRIGGER AS $$
     DECLARE
         obecne_zarobki_zawodnika int;
@@ -14,6 +14,37 @@ $$ LANGUAGE plpgsql;
 CREATE CONSTRAINT TRIGGER _01_podpiszKontraktyZawodnikow 
     AFTER INSERT ON nba.zawodnicy_zespoly_uzytkownikow 
     FOR EACH ROW EXECUTE PROCEDURE nba.podpiszKontraktyZawodnikow();
+
+
+-- Procedury zapewniajace zgodnosc budzetu druzyny uzytkownika
+CREATE OR REPLACE FUNCTION nba.zapewnijZgodnoscBudzetu() RETURNS TRIGGER AS $$
+    DECLARE
+        suma_zarobkow int;
+        budzet_druzyny int;
+    BEGIN 
+        WITH zawodnicy_tej_druzyny AS 
+            (SELECT id_zawodnika, wartosc_kontraktu FROM nba.zawodnicy_zespoly_uzytkownikow 
+                WHERE id_zespolu_uzytkownika = NEW.id_zespolu_uzytkownika)
+        SELECT INTO suma_zarobkow SUM(ztd.wartosc_kontraktu) FROM zawodnicy_tej_druzyny ztd;
+
+        SELECT INTO budzet_druzyny budzet_zespolu_uzytkownika FROM nba.zespoly_uzytkownikow WHERE id_zespolu_uzytkownika = NEW.id_zespolu_uzytkownika;
+
+        IF (suma_zarobkow > budzet_druzyny) THEN
+            RAISE EXCEPTION 'Przekroczono budzet zespolu!' USING 
+                DETAIL = 'Przekroczono budzet zespolu!',
+                HINT = 'Budzet zespolu = ' || budzet_druzyny || ', natomiast suma zarobkow zawodnikow = ' || suma_zarobkow || '.';
+        ELSE
+            RETURN NEW;
+        END IF;
+    END;
+$$ LANGUAGE plpgsql;
+
+CREATE CONSTRAINT TRIGGER _02_zapewnijZgodnoscBudzetu 
+    AFTER INSERT OR UPDATE ON nba.zawodnicy_zespoly_uzytkownikow 
+    INITIALLY DEFERRED
+    FOR EACH ROW EXECUTE PROCEDURE nba.zapewnijZgodnoscBudzetu();
+
+
 
 -- Procedury zapewniajace poprawna liczbe (5) zawodnikow w druzynie uzytkownika
 
@@ -31,7 +62,7 @@ CREATE FUNCTION nba.zapewnijPoprawnaIloscZawodnikow() RETURNS TRIGGER AS $$
             WHERE id_zespolu_uzytkownika = NEW.id_zespolu_uzytkownika;
         IF NOT(nba.czyPrawidlowaLiczbaZawodnikow(liczba_zawodnikow)) THEN
             RAISE EXCEPTION 'Nieprawidlowa ilosc zawodnikow w druzynie!' USING 
-                DETAIL = 'Nieprawidlowa ilosc zawodnikow w druzynie! Twoja druzyna sklada sie z ' || liczba_zawodnikow || ' zawodnikow',
+                DETAIL = 'Nieprawidlowa ilosc zawodnikow w druzynie! Twoja druzyna sklada sie z ' || liczba_zawodnikow || ' zawodnikow.',
                 HINT = 'Druzyna powinna skladac sie z 5 zawodnikow.';
             RETURN NULL;
         ELSE
@@ -40,7 +71,7 @@ CREATE FUNCTION nba.zapewnijPoprawnaIloscZawodnikow() RETURNS TRIGGER AS $$
     END;
 $$ LANGUAGE plpgsql;
 
-CREATE CONSTRAINT TRIGGER _02_zapewnijPoprawnaIloscZawodnikow 
+CREATE CONSTRAINT TRIGGER _03_zapewnijPoprawnaIloscZawodnikow 
     AFTER INSERT OR UPDATE ON nba.zawodnicy_zespoly_uzytkownikow 
     INITIALLY DEFERRED
     FOR EACH ROW EXECUTE PROCEDURE nba.zapewnijPoprawnaIloscZawodnikow();
@@ -68,7 +99,7 @@ CREATE FUNCTION nba.zapewnijNiepowtarzalnoscZawodnikow() RETURNS TRIGGER AS $$
     END;
 $$ LANGUAGE plpgsql;
 
-CREATE CONSTRAINT TRIGGER _03_zapewnijNiepowtarzalnoscZawodnikow 
+CREATE CONSTRAINT TRIGGER _04_zapewnijNiepowtarzalnoscZawodnikow 
     AFTER INSERT OR UPDATE ON nba.zawodnicy_zespoly_uzytkownikow 
     INITIALLY DEFERRED
     FOR EACH ROW EXECUTE PROCEDURE nba.zapewnijNiepowtarzalnoscZawodnikow();
@@ -106,7 +137,7 @@ CREATE FUNCTION nba.zapewnijPoprawnoscObroncow() RETURNS TRIGGER AS $$
             AND nba.czyObronca(zaw.id_zawodnika);
         IF(liczba_obroncow < 2) THEN
             RAISE EXCEPTION 'Niewystarczajaca ilosc obroncow (< 2) w druzynie!' USING 
-                DETAIL = 'Niewystarczajaca ilosc obroncow (< 2) w druzynie! Twoja druzyna sklada sie z ' || liczba_obroncow || ' obroncow',
+                DETAIL = 'Niewystarczajaca ilosc obroncow (< 2) w druzynie! Twoja druzyna sklada sie z ' || liczba_obroncow || ' obroncow.',
                 HINT = 'W druzynie powinno byc dwoch obroncow.';
             RETURN NULL;
         ELSE
@@ -115,7 +146,7 @@ CREATE FUNCTION nba.zapewnijPoprawnoscObroncow() RETURNS TRIGGER AS $$
     END;
 $$ LANGUAGE plpgsql;
 
-CREATE CONSTRAINT TRIGGER _04_zapewnijPoprawnoscObroncow 
+CREATE CONSTRAINT TRIGGER _05_zapewnijPoprawnoscObroncow 
     AFTER INSERT OR UPDATE ON nba.zawodnicy_zespoly_uzytkownikow 
     INITIALLY DEFERRED
     FOR EACH ROW EXECUTE PROCEDURE nba.zapewnijPoprawnoscObroncow();
@@ -132,7 +163,7 @@ CREATE FUNCTION nba.zapewnijPoprawnoscSkrzydlowych() RETURNS TRIGGER AS $$
             AND nba.czySkrzydlowy(zaw.id_zawodnika);
         IF(liczba_skrzydlowych < 2) THEN
             RAISE EXCEPTION 'Niewystarczajaca ilosc skrzydlowych (< 2) w druzynie!' USING 
-                DETAIL = 'Niewystarczajaca ilosc skrzydlowych (< 2) w druzynie! Twoja druzyna sklada sie z ' || liczba_skrzydlowych || ' skrzydlowych',
+                DETAIL = 'Niewystarczajaca ilosc skrzydlowych (< 2) w druzynie! Twoja druzyna sklada sie z ' || liczba_skrzydlowych || ' skrzydlowych.',
                 HINT = 'W druzynie powinno byc dwoch skrzydlowych.';
             RETURN NULL;
         ELSE
@@ -141,7 +172,7 @@ CREATE FUNCTION nba.zapewnijPoprawnoscSkrzydlowych() RETURNS TRIGGER AS $$
     END;
 $$ LANGUAGE plpgsql;
 
-CREATE CONSTRAINT TRIGGER _05_zapewnijPoprawnoscskrzydlowych 
+CREATE CONSTRAINT TRIGGER _06_zapewnijPoprawnoscskrzydlowych 
     AFTER INSERT OR UPDATE ON nba.zawodnicy_zespoly_uzytkownikow 
     INITIALLY DEFERRED
     FOR EACH ROW EXECUTE PROCEDURE nba.zapewnijPoprawnoscskrzydlowych();
@@ -158,7 +189,7 @@ CREATE FUNCTION nba.zapewnijPoprawnoscCentrow() RETURNS TRIGGER AS $$
             AND nba.czyCenter(zaw.id_zawodnika);
         IF(liczba_centrow < 1) THEN
             RAISE EXCEPTION 'Niewystarczajaca ilosc centrow (< 1) w druzynie!' USING 
-                DETAIL = 'Niewystarczajaca ilosc centrow (< 1) w druzynie! Twoja druzyna sklada sie z ' || liczba_centrow || ' centrow',
+                DETAIL = 'Niewystarczajaca ilosc centrow (< 1) w druzynie! Twoja druzyna sklada sie z ' || liczba_centrow || ' centrow.',
                 HINT = 'W druzynie powinien byc jeden center.';
             RETURN NULL;
         ELSE
@@ -167,31 +198,8 @@ CREATE FUNCTION nba.zapewnijPoprawnoscCentrow() RETURNS TRIGGER AS $$
     END;
 $$ LANGUAGE plpgsql;
 
-CREATE CONSTRAINT TRIGGER _06_zapewnijPoprawnoscCentrow 
+CREATE CONSTRAINT TRIGGER _07_zapewnijPoprawnoscCentrow 
     AFTER INSERT OR UPDATE ON nba.zawodnicy_zespoly_uzytkownikow 
     INITIALLY DEFERRED
     FOR EACH ROW EXECUTE PROCEDURE nba.zapewnijPoprawnoscCentrow();
-
-
--- Procedury zapewniajace zgodnosc budzetu druzyny uzytkownika
-
-CREATE FUNCTION nba.policzZarobkiZawodnikow() RETURNS TRIGGER AS $$
-    DECLARE
-        suma_zarobkow int := 0;
-    BEGIN 
-        WITH zawodnicy_tej_druzyny AS 
-            (SELECT id_zawodnika, wartosc_kontraktu FROM nba.zawodnicy_zespoly_uzytkownikow 
-                WHERE id_zespolu_uzytkownika = NEW.id_zespolu_uzytkownika)
-        SELECT INTO suma_zarobkow SUM(ztd.wartosc_kontraktu) FROM zawodnicy_tej_druzyny ztd;
-
-        UPDATE nba.zespoly_uzytkownikow SET suma_wynagrodzen_zawodnikow = suma_zarobkow 
-            WHERE id_zespolu_uzytkownika = NEW.id_zespolu_uzytkownika;
-        RETURN NEW;
-    END;
-$$ LANGUAGE plpgsql;
-
-CREATE CONSTRAINT TRIGGER _07_policzZarobkiZawodnikow 
-    AFTER INSERT OR UPDATE ON nba.zawodnicy_zespoly_uzytkownikow 
-    INITIALLY DEFERRED
-    FOR EACH ROW EXECUTE PROCEDURE nba.policzZarobkiZawodnikow();
 

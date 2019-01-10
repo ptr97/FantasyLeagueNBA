@@ -42,9 +42,6 @@ const FantasyTeams = {
                 if(error.routine === '_bt_check_unique') {
                     return res.status(400).json({ message: 'Team with given name already exists!' })
                 }
-                if(error.routine === 'ExecConstraints' && error.constraint === 'zgodny_budzet') {
-                    return res.status(400).json({ message: 'Players exceeded team budget!' })
-                }
                 return res.status(400).json(error)
             }
         } finally {
@@ -95,9 +92,6 @@ const FantasyTeams = {
                 })
             } catch(error) {
                 await client.query('ROLLBACK')
-                if(error.routine === 'ExecConstraints' && error.constraint === 'zgodny_budzet') {
-                    return res.status(400).json({ message: 'Players exceeded team budget!' })
-                }
                 return res.status(400).json({
                     message: error.detail,
                     hint: error.hint
@@ -119,7 +113,7 @@ const FantasyTeams = {
     },
     
     async myTeamInfo(req, res) {
-        const teamInfoQuery = 'SELECT * FROM nba.zespoly_uzytkownikow WHERE id_uzytkownika = $1'
+        const teamInfoQuery = 'SELECT * FROM nba.widok_uzytkownik_zespol WHERE id_uzytkownika = $1'
         const playersQuery = 'SELECT * FROM nba.widok_uzyt_zawodnicy JOIN nba.widok_statystyki_zawodnikow USING(id_zawodnika) WHERE id_uzytkownika = $1'
         try {
             const myTeamInfo = await db.query(teamInfoQuery, [req.user.id])
