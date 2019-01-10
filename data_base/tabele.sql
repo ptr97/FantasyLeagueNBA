@@ -8,8 +8,8 @@ CREATE DOMAIN nba.triCode AS varchar(5) NOT NULL CHECK (VALUE ~ '^[A-Z]{3}$');
 
 CREATE TABLE nba.oficjalne_zespoly (
     id_oficjalnego_zespolu bigint,
-    nazwa_oficjalnego_zespolu varchar(40) not null,
-    kod_oficjalnego_zespolu nba.triCode,
+    nazwa_oficjalnego_zespolu varchar(40) unique not null,
+    kod_oficjalnego_zespolu nba.triCode unique,
     dywizja_oficjalnego_zespolu varchar(20) not null,
     konferencja_oficjalnego_zespolu varchar(20) not null,
     PRIMARY KEY (id_oficjalnego_zespolu)
