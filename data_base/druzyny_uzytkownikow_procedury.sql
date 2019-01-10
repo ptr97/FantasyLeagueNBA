@@ -17,7 +17,7 @@ CREATE CONSTRAINT TRIGGER _01_podpiszKontraktyZawodnikow
 
 
 -- Procedury zapewniajace zgodnosc budzetu druzyny uzytkownika
-CREATE OR REPLACE FUNCTION nba.zapewnijZgodnoscBudzetu() RETURNS TRIGGER AS $$
+CREATE FUNCTION nba.zapewnijZgodnoscBudzetu() RETURNS TRIGGER AS $$
     DECLARE
         suma_zarobkow int;
         budzet_druzyny int;
