@@ -3,7 +3,7 @@ import db from '../db'
 const Players = {
     async allPlayers(req, res) {
         try {
-            const queryText = 'SELECT * FROM nba.zawodnicy'
+            const queryText = 'SELECT * FROM nba.widok_statystyki_zawodnikow'
             const { rows, rowCount } = await db.query(queryText)
             return res.status(200).json({
                 allPlayers: rows,
