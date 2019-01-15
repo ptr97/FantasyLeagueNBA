@@ -84,6 +84,8 @@ CREATE VIEW nba.widok_statystyki_zawodnikow AS
         z.pozycja_zawodnika,
         z.numer_koszulki,
         z.zarobki_zawodnika,
+        z.waga_zawodnika,
+        z.wzrost_zawodnika,
         ROUND(
         ((SELECT SUM(punkty_zawodnika)::float 
             FROM nba.statystyki_meczu 
