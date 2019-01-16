@@ -145,32 +145,7 @@ const InsertionsToDb = {
     },
 }
 
-
 // InsertionsToDb.insertPastGamesToDb()
-
-
-// InsertionsToDb.insertGamesToDbFrom(20181016)
-// InsertionsToDb.insertGamesToDbFrom(20181017)
-// InsertionsToDb.insertGamesToDbFrom(20181018)
-
-// InsertionsToDb.insertGamesToDbFrom(20181019)
-// InsertionsToDb.insertGamesToDbFrom(20181020)
-// InsertionsToDb.insertGamesToDbFrom(20181021)
-
-// InsertionsToDb.insertGamesToDbFrom(20181022)
-// InsertionsToDb.insertGamesToDbFrom(20181023)
-// InsertionsToDb.insertGamesToDbFrom(20181024)
-
-// InsertionsToDb.insertGamesToDbFrom(20181025)
-// InsertionsToDb.insertGamesToDbFrom(20181026)
-// InsertionsToDb.insertGamesToDbFrom(20181027)
-// InsertionsToDb.insertGamesToDbFrom(20181028)
-// InsertionsToDb.insertGamesToDbFrom(20181029)
-// InsertionsToDb.insertGamesToDbFrom(20181030)
-
-// InsertionsToDb.insertGamesToDbFrom(20190103)
-
-
 // InsertionsToDb.insertTonightGamesToDb()
 
 export default InsertionsToDb
