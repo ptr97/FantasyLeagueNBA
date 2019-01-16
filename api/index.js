@@ -13,6 +13,7 @@ const app = express()
 app.use(express.json())
 app.use(require('cors')())
 app.set('port', process.env.PORT || 3000)
+app.set('host', process.env.HOST || 'localhost')
 
 cron.schedule('00 00 8 * * *', () => {
     InsertionsToDb.insertTonightGamesToDb()
@@ -70,8 +71,8 @@ app.use((err, req, res, next) => {
 })
 
 app.listen(app.get('port'), () => {
-console.log('Express started on http://localhost:' +
-        app.get('port') + '/api/; press Ctrl-C to terminate.')
+    console.log('Express started on http://' + app.get('host') + ':' +
+    app.get('port') + '/api/; press Ctrl-C to terminate.')
 })
 
 export default app
